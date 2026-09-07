@@ -74,10 +74,10 @@ def evaluar(rag_system: RAGSystem, golden_set: List[Dict]) -> Dict:
             #
             # El caso se considera correcto porque no esperamos
             # fuentes ni categorías específicas.
-            recall_fuentes = 1.0
-            recall_categorias = 1.0
-            precision_fuentes = 1.0
-            precision_categorias = 1.0
+            recall_fuentes = None
+            recall_categorias = None
+            precision_fuentes = None
+            precision_categorias = None
 
         resultados_por_pregunta.append({
             "pregunta": caso["pregunta"],
@@ -95,33 +95,54 @@ def evaluar(rag_system: RAGSystem, golden_set: List[Dict]) -> Dict:
         sum(
             r["recall_fuentes"]
             for r in resultados_por_pregunta
+            if r["recall_fuentes"] is not None
         )
-        / len(resultados_por_pregunta)
+        / sum(
+            1
+            for r in resultados_por_pregunta
+            if r["recall_fuentes"] is not None
+    )
     )
 
     recall_categorias_promedio = (
         sum(
             r["recall_categorias"]
             for r in resultados_por_pregunta
+            if r["recall_categorias"] is not None
         )
-        / len(resultados_por_pregunta)
+        / sum(
+            1
+            for r in resultados_por_pregunta
+            if r["recall_categorias"] is not None
+        )
     )
 
     precision_fuentes_promedio = (
         sum(
             r["precision_fuentes"]
             for r in resultados_por_pregunta
+            if r["precision_fuentes"] is not None
         )
-        / len(resultados_por_pregunta)
+        / sum(
+            1
+            for r in resultados_por_pregunta
+            if r["precision_fuentes"] is not None
+        )
     )
-
+    
     precision_categorias_promedio = (
             sum(
                 r["precision_categorias"]
                 for r in resultados_por_pregunta
+                if r["precision_categorias"] is not None
             )
-            / len(resultados_por_pregunta)
+            / sum(
+                1
+                for r in resultados_por_pregunta
+                if r["precision_fuentes"] is not None
         )
+    )
+    
 
     return {
         "detalle": resultados_por_pregunta,
@@ -136,16 +157,22 @@ rag_system = RAGSystem(retriever_hibrido)
 
 reporte = evaluar(rag_system, golden_set)
 
+def mostrar_metrica(valor):
+    return "N/A" if valor is None else f"{valor:.0%}"
+
 for r in reporte["detalle"]:
 
-    estado = (
-        "✅"
-        if (
+    if (
+        r["recall_fuentes"] is None and r["recall_categorias"] is None
+    ):
+        estado = "➖"
+    elif (
             r["recall_fuentes"] == 1.0
             and r["recall_categorias"] == 1.0
-        )
-        else "❌"
-    )
+        ):
+        estado = "✅"
+    else:
+        estado = "❌"
 
     print(f"{estado} {r['pregunta']}")
 
@@ -153,10 +180,10 @@ for r in reporte["detalle"]:
     print(f"   Fuentes recuperadas: {r['fuentes_recuperadas']}")
     print(f"   Categorías esperadas: {r['categorias_esperadas']}")
     print(f"   Categorías recuperadas: {r['categorias_recuperadas']}")
-    print(f"   Recall fuentes: {r['recall_fuentes']:.0%}")
-    print(f"   Precision fuentes: {r['precision_fuentes']:.0%}")
-    print(f"   Recall categorías: {r['recall_categorias']:.0%}")
-    print(f"   Precision categorías: {r['precision_categorias']:.0%}")
+    print(f"   Recall fuentes: {mostrar_metrica(r['recall_fuentes'])}")
+    print(f"   Precision fuentes: {mostrar_metrica(r['precision_fuentes'])}")
+    print(f"   Recall categorías: {mostrar_metrica(r['recall_categorias'])}")
+    print(f"   Precision categorías: {mostrar_metrica(r['precision_categorias'])}")
 
 print("=" * 80)
 

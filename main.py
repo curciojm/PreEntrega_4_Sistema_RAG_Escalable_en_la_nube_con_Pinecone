@@ -61,7 +61,7 @@ async def get_rag_response(query: str) -> RAGSystem:
 
 async def main():
     # estos prints se deberian quedar son la respuesta del llm
-    respuesta_ok = await get_rag_response("¿Como se calcula la regresion?")
+    respuesta_ok = await get_rag_response("¿Que es la probabilidad?")
     # Decidi agregar la pregunta original para comparar mejor en el print
     print(f"\nPREGUNTA ORIGINAL: {respuesta_ok.query}")
     print(f"\nRESPUESTA: {respuesta_ok.respuesta}")
