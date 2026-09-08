@@ -26,7 +26,7 @@ async def setup_vector_infrastructure(
     INDEX_NAME: str,
     DIMENSIONS: int
 ):
-asdasdasasdasdasd
+
     pc = Pinecone(api_key=PINECONE_API_KEY)
 
     if INDEX_NAME not in pc.list_indexes().names():
@@ -49,14 +49,29 @@ asdasdasasdasdasd
 
     index = pc.Index(INDEX_NAME)
 
-    vectorstore = PineconeVectorStore.from_documents(
-        documents=documentos_procesados,
-        embedding=EMBEDDINGS,
-        index_name=INDEX_NAME,
-        namespace=NAMESPACE,
+    stats = index.describe_index_stats()
+
+    vector_count = (
+        stats["namespaces"]
+        .get(NAMESPACE, {})
+        .get("vector_count", 0)
     )
 
-    stats = index.describe_index_stats()
+    if vector_count == 0:
+        # Primera ejecución: generar embeddings y guardar
+        vectorstore = PineconeVectorStore.from_documents(
+            documents=documentos_procesados,
+            embedding=EMBEDDINGS,
+            index_name=INDEX_NAME,
+            namespace=NAMESPACE,
+        )
+    else:
+        # Ejecuciones siguientes: NO volver a insertar
+        vectorstore = PineconeVectorStore(
+            index_name=INDEX_NAME,
+            embedding=EMBEDDINGS,
+            namespace=NAMESPACE,
+        )
 
     print(
         "📦 Vectores en el namespace:",
