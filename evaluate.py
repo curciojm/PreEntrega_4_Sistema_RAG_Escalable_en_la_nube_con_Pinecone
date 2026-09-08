@@ -25,6 +25,7 @@ def evaluar(rag_system: RAGSystem, golden_set: List[Dict]) -> Dict:
 
         if respuesta_disponible:
 
+            # RECALL
             # Recall de fuentes:
             # ¿Aparece al menos una de las fuentes esperadas?
             recall_fuentes = 1.0 if any(
@@ -139,7 +140,7 @@ def evaluar(rag_system: RAGSystem, golden_set: List[Dict]) -> Dict:
             / sum(
                 1
                 for r in resultados_por_pregunta
-                if r["precision_fuentes"] is not None
+                if r["precision_categorias"] is not None
         )
     )
     

@@ -20,7 +20,7 @@ def formatear_documentos(docs) -> str:
     )
 
 # Orquestación
-async def get_rag_response(query: str) -> RAGSystem:
+async def get_rag_response(query: str) -> RAGResponse:
     try:
         logger.info(f"Procesando consulta: {query}")
 

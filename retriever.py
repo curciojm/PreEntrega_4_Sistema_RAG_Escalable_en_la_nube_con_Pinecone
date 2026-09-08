@@ -10,11 +10,12 @@ retriever_bm25 = BM25Retriever.from_documents(
 
 retriever_bm25.k = 5
 
-retriever_vectorial = vectorstore.as_retriever(
+# por defecto es similitud
+retriever_vectorial = vectorstore.as_retriever(search_type="similarity",
     search_kwargs={"k": 5},
 )
 
 retriever_hibrido = EnsembleRetriever(
     retrievers=[retriever_bm25, retriever_vectorial],
-    weights=[0.5, 0.5],
+    weights=[0.25, 0.75],
 )
