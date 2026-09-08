@@ -5,13 +5,14 @@ from pinecone import Pinecone, ServerlessSpec
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
 
-from setup import procesamiento_desde_pdfs, recuperar_documentos_de_pinecone
+from setup import documentos_procesados
 
 
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 
 INDEX_NAME = "statistics-methodology"
 
+# namespace es para separar vectores directamente. como una biblioteca aparte. distinto a los metadatos que comparten vectores obviamente
 NAMESPACE = "Statistics_and_methodolgy_texts"
 
 EMBEDDINGS = HuggingFaceEmbeddings(
@@ -34,6 +35,7 @@ async def setup_vector_infrastructure(
 
         pc.create_index(
             name=INDEX_NAME,
+            # Asi la dimension de indexacion con la de vectorizacion coinciden
             dimension=DIMENSIONS,
             metric="cosine",
             spec=ServerlessSpec(
@@ -56,20 +58,15 @@ async def setup_vector_infrastructure(
     )
 
     if vector_count == 0:
-
-        documentos_procesados = procesamiento_desde_pdfs()
-
+        # Primera ejecución: generar embeddings y guardar
         vectorstore = PineconeVectorStore.from_documents(
             documents=documentos_procesados,
             embedding=EMBEDDINGS,
             index_name=INDEX_NAME,
             namespace=NAMESPACE,
         )
-
     else:
-
-        documentos_procesados = recuperar_documentos_de_pinecone(index)
-
+        # Ejecuciones siguientes: NO volver a insertar
         vectorstore = PineconeVectorStore(
             index_name=INDEX_NAME,
             embedding=EMBEDDINGS,
@@ -83,9 +80,8 @@ async def setup_vector_infrastructure(
 
     print(f"Estado del índice: {stats}")
 
-    return index, vectorstore, documentos_procesados
+    return index, vectorstore
 
-
-index, vectorstore, documentos_procesados = asyncio.run(
+index, vectorstore = asyncio.run(
     setup_vector_infrastructure(INDEX_NAME, DIMENSIONS)
 )
