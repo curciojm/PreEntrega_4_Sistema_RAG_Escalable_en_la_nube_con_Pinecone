@@ -26,7 +26,7 @@ async def setup_vector_infrastructure(
     INDEX_NAME: str,
     DIMENSIONS: int
 ):
-
+asdasdasasdasdasd
     pc = Pinecone(api_key=PINECONE_API_KEY)
 
     if INDEX_NAME not in pc.list_indexes().names():
