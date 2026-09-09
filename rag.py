@@ -1,4 +1,8 @@
-
+from logging_config import logger
+from schemas import RespuestaLLM, RAGSystem, RAGResponse
+from chain import chain, parser_llm
+from retriever import retriever_hibrido
+from errors import classify_error
 
 # Formatear el documento para que lo lea el LLM
 # documentos_procesados es el procesamiento para generar los embedings
@@ -14,7 +18,7 @@ def formatear_documentos(docs) -> str:
 
 
 
-async def get_rag_response(query: str) -> RAGSystem:
+async def get_rag_response(query: str) -> RAGResponse:
     try:
         logger.info(f"Procesando consulta: {query}")
 

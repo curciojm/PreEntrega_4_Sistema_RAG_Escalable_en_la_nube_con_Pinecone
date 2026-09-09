@@ -1,12 +1,7 @@
 from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader
 from langchain_core.documents import Document
+from chunking import DocumentProcessor
 
-import os
-import re
-import tiktoken
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-
-from logging_config import logger
 from db_config import NAMESPACE
 
 

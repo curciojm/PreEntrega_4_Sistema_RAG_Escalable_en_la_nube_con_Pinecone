@@ -1,5 +1,5 @@
 import asyncio
-from db_config import NAMESPACE, EMBEDDINGS, PINECONE_API_KEY
+from db_config import NAMESPACE, EMBEDDINGS, PINECONE_API_KEY, INDEX_NAME, DIMENSIONS
 
 from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
@@ -70,3 +70,8 @@ async def setup_vector_infrastructure(
     print(f"Estado del índice: {stats}")
 
     return index, vectorstore, documentos_procesados
+
+
+index, vectorstore, documentos_procesados = asyncio.run(
+    setup_vector_infrastructure(INDEX_NAME, DIMENSIONS)
+)

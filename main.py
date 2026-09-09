@@ -1,8 +1,5 @@
 import asyncio
 from rag import get_rag_response
-from db_config import INDEX_NAME, DIMENSIONS
-from db_ingest import setup_vector_infrastructure, index
-from retrieval import crear_retriever_hibrido
 
 
 async def main():

@@ -14,7 +14,7 @@ class DocumentProcessor:
         self.tokenizer = tiktoken.get_encoding(model_encoding)
 
         self.splitter = RecursiveCharacterTextSplitter(
-            chunk_size=600,
+            chunk_size=400,
             chunk_overlap=100,
             length_function=self.calculate_tokens,
             separators=["\n\n", "\n", ".", " ", ""],

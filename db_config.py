@@ -3,7 +3,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 
-INDEX_NAME = "statistics-methodology"
+INDEX_NAME = os.getenv("INDEX_NAME")
 
 NAMESPACE = "Statistics_and_methodolgy_texts"
 

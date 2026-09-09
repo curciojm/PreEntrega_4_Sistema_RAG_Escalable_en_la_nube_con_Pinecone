@@ -1,7 +1,7 @@
 import json
 
 from langchain_classic.retrievers import EnsembleRetriever
-from retrieval import retriever_bm25, retriever_vectorial
+from PreEntrega_4_Sistema_RAG_Escalable_en_la_nube_con_Pinecone.retriever import retriever_bm25, retriever_vectorial
 
 
 WEIGHTS = [

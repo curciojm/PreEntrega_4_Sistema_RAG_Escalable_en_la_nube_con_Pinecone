@@ -2,7 +2,7 @@ import json
 from typing import List, Dict
 
 from schemas import RAGSystem
-from retrieval import retriever_hibrido
+from retriever import retriever_hibrido
 
 with open("golden_set.json", "r", encoding="utf-8") as f:
     golden_set = json.load(f)

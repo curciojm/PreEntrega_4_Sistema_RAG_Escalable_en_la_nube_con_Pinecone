@@ -49,7 +49,7 @@ class RAGResponse:
         paginas: List[int],
         categorias: List[str],
         chunks_ids: List[int],
-        fragmentos_recuperados: List[int],
+        fragmentos_recuperados: int,
     ):  
         self.query = query
         self.respuesta = respuesta

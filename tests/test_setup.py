@@ -1,75 +1,93 @@
-
 from langchain_core.documents import Document
 
-from setup import DocumentProcessor
+from setup import procesamiento_desde_pdfs
 
 
-def test_process_document_crea_chunks():
-    processor = DocumentProcessor()
+def test_procesamiento_desde_pdfs(monkeypatch):
 
-    documento = Document(
-        page_content=(
-            "La regresión es una técnica estadística utilizada para realizar "
-            "predicciones. La correlación estudia la relación entre dos variables."
-        ),
-        metadata={
-            "source": (
-                "Pagano 2006 CAP 6 - "
-                "Estadística para las ciencias del comportamiento, correlacion.pdf"
-            ),
-            "page": 0,
-        },
+    documentos_crudos = [
+        Document(
+            page_content="Texto de prueba",
+            metadata={"source": "prueba.pdf", "page": 0}
+        )
+    ]
+
+    documentos_procesados = [
+        Document(
+            page_content="Texto procesado",
+            metadata={"fuente": "prueba"}
+        )
+    ]
+
+    class FakeLoader:
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def load(self):
+            return documentos_crudos
+
+    class FakeProcessor:
+
+        def process_document(self, documentos):
+            assert documentos == documentos_crudos
+            return documentos_procesados
+
+    monkeypatch.setattr(
+        "setup.DirectoryLoader",
+        FakeLoader
     )
 
-    chunks = processor.process_document([documento])
-
-    # Debe devolver una lista
-    assert isinstance(chunks, list)
-
-    # Debe haber generado al menos un chunk
-    assert len(chunks) > 0
-
-    # Cada elemento debe ser un Document
-    assert all(isinstance(chunk, Document) for chunk in chunks)
-
-    # Ningún chunk debe estar vacío
-    assert all(chunk.page_content.strip() for chunk in chunks)
-
-
-def test_process_document_agrega_metadata():
-    processor = DocumentProcessor()
-
-    documento = Document(
-        page_content=(
-            "La correlación estudia la relación entre dos variables."
-        ),
-        metadata={
-            "source": (
-                "Pagano 2006 CAP 6 - "
-                "Estadística para las ciencias del comportamiento, correlacion.pdf"
-            ),
-            "page": 0,
-        },
+    monkeypatch.setattr(
+        "setup.DocumentProcessor",
+        FakeProcessor
     )
 
-    chunks = processor.process_document([documento])
+    resultado = procesamiento_desde_pdfs()
 
-    assert len(chunks) > 0
+    assert resultado == documentos_procesados
 
-    metadata = chunks[0].metadata
 
-    # Fuente obtenida del nombre del archivo
-    assert metadata["fuente"] == (
-        "Pagano 2006 CAP 6 - "
-        "Estadística para las ciencias del comportamiento"
-    )
+def test_recuperar_documentos_de_pinecone():
+    from setup import recuperar_documentos_de_pinecone
 
-    # Categoría obtenida del nombre del archivo
-    assert metadata["categoria"] == "correlacion"
+    class FakeVector:
+        def __init__(self, metadata):
+            self.metadata = metadata
 
-    # PyPDFLoader utiliza páginas comenzando desde 0.
-    # Nuestro pipeline las convierte a numeración humana comenzando desde 1.
-    assert metadata["pagina"] == 1
+    class FakeFetchResult:
+        def __init__(self):
+            self.vectors = {
+                "id-1": FakeVector({
+                    "text": "Texto del primer chunk",
+                    "fuente": "Pagano 2006",
+                    "pagina": 1,
+                    "categoria": "correlacion",
+                    "chunk_id": 0,
+                }),
+                "id-2": FakeVector({
+                    "text": "Texto del segundo chunk",
+                    "fuente": "Sampieri",
+                    "pagina": 2,
+                    "categoria": "probabilidad",
+                    "chunk_id": 1,
+                }),
+            }
 
-    # El primer chunk debe recibir el ID 0
-    assert metadata["chunk_id"] == 0
+    class FakeIndex:
+
+        def list(self, namespace):
+            return [["id-1", "id-2"]]
+
+        def fetch(self, ids, namespace):
+            return FakeFetchResult()
+
+    index = FakeIndex()
+
+    documentos = recuperar_documentos_de_pinecone(index)
+
+    assert len(documentos) == 2
+    assert documentos[0].page_content == "Texto del primer chunk"
+    assert documentos[1].page_content == "Texto del segundo chunk"
+    assert documentos[0].metadata["fuente"] == "Pagano 2006"
+    assert documentos[1].metadata["categoria"] == "probabilidad"
