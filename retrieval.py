@@ -1,7 +1,7 @@
 from langchain_community.retrievers import BM25Retriever
 from langchain_classic.retrievers import EnsembleRetriever
 
-from vector_db import vectorstore, documentos_procesados
+from db_ingest import vectorstore, documentos_procesados
 
 
 retriever_bm25 = BM25Retriever.from_documents(

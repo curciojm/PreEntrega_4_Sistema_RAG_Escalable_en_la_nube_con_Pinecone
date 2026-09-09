@@ -1,24 +1,10 @@
 import asyncio
-import os
+from db_config import NAMESPACE, INDEX_NAME, EMBEDDINGS, PINECONE_API_KEY, DIMENSIONS
 
 from pinecone import Pinecone, ServerlessSpec
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
 
 from setup import procesamiento_desde_pdfs, recuperar_documentos_de_pinecone
-
-
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-
-INDEX_NAME = "statistics-methodology"
-
-NAMESPACE = "Statistics_and_methodolgy_texts"
-
-EMBEDDINGS = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
-)
-
-DIMENSIONS = 384
 
 
 async def setup_vector_infrastructure(

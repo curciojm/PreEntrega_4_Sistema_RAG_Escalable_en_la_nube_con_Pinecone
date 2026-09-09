@@ -1,7 +1,7 @@
 import json
 
 from langchain_classic.retrievers import EnsembleRetriever
-from retriever import retriever_bm25, retriever_vectorial
+from retrieval import retriever_bm25, retriever_vectorial
 
 
 WEIGHTS = [
