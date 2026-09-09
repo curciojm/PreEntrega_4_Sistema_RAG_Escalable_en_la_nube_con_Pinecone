@@ -1,23 +1,9 @@
-from logging_config import logger
-
-from schemas import RAGResponse, RespuestaLLM
-from retrieval import retriever_hibrido
-from errors import classify_error
-from chain import chain, parser_llm
 
 
-def formatear_documentos(docs) -> str:
-    return "\n\n---\n\n".join(
-        f"[Fuente: {d.metadata.get('fuente', 'desconocida')}]\n"
-        f"[Página: {d.metadata.get('pagina', 'desconocida')}]\n"
-        f"[Categoría: {d.metadata.get('categoria', 'desconocida')}]\n"
-        f"[Chunk: {d.metadata.get('chunk_id', 'desconocida')}]\n"
-        f"{d.page_content}"
-        for d in docs
-    )
 
-# Orquestación
-async def get_rag_response(query: str) -> RAGResponse:
+
+
+async def get_rag_response(query: str) -> RAGSystem:
     try:
         logger.info(f"Procesando consulta: {query}")
 
