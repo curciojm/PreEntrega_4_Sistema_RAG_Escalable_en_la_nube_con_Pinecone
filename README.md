@@ -227,56 +227,78 @@ El script imprime en consola un resumen de las métricas obtenidas.
 
 ### Resultados de la evaluación
 
-> **Completar esta sección con el resumen final de los resultados y los gráficos correspondientes.**
+Además de la evaluación realizada sobre la configuración final, se realizaron pruebas adicionales sobre el `EnsembleRetriever` para analizar el efecto de dos parámetros: el tamaño de los chunks y la proporción de pesos asignada a la búsqueda BM25 y a la búsqueda vectorial.
 
-**Recall@5**
+El objetivo fue determinar qué combinación permitía obtener el mejor desempeño sobre el Golden Set utilizado, evaluando mediante **Recall@5** y **Precision@5**.
 
-[INSERTAR GRÁFICO DE RECALL@5 AQUÍ]
+#### Recall@5
 
-Resumen:
+La Figura 1 muestra el Recall@5 obtenido para diferentes combinaciones de pesos entre BM25 y búsqueda vectorial, utilizando distintos tamaños de chunk.
 
-* Recall@5: **[COMPLETAR]**
-* [Breve interpretación de los resultados]
+![Recall@5](analysis/recall_at_5.png)
 
-**Precision@5**
+**Figura 1.** Recall@5 según la proporción de pesos entre BM25 y búsqueda vectorial para diferentes tamaños de chunk.
 
-[INSERTAR GRÁFICO DE PRECISION@5 AQUÍ]
+Los valores más altos de Recall@5 se obtuvieron con chunks de **500, 400 y 300 tokens**, alcanzando el 100% para varias de las configuraciones evaluadas. En cambio, los chunks de 600 tokens presentaron un Recall menor en las configuraciones con mayor peso vectorial.
 
-Resumen:
+En este conjunto de pruebas, los resultados sugieren que el tamaño de los chunks tuvo un efecto relevante sobre la capacidad del sistema para recuperar información pertinente. Sin embargo, el comportamiento también dependió de la combinación de pesos utilizada en el `EnsembleRetriever`.
 
-* Precision@5: **[COMPLETAR]**
-* [Breve interpretación de los resultados]
+**Nota:** Algunas configuraciones presentan valores idénticos de Recall@5, por lo que sus líneas se superponen en el gráfico. Esto refleja que, sobre el Golden Set utilizado, dichas configuraciones tuvieron el mismo desempeño en Recall@5.
 
-La configuración final utilizada para la evaluación fue:
+#### Precision@5
 
-* Chunk size: `400` tokens.
+La Figura 2 presenta los resultados de Precision@5 para las mismas combinaciones de pesos y tamaños de chunk.
 
-* Chunk overlap: `100` tokens.
+![Precision@5](analysis/precision_at_5.png)
 
-* Top-k: `5`.
+**Figura 2.** Precision@5 según la proporción de pesos entre BM25 y búsqueda vectorial para diferentes tamaños de chunk.
 
-* Peso BM25: `0.25`.
+Los mejores valores de Precision@5 se obtuvieron con un tamaño de **400 tokens**. En este caso, la precisión alcanzó su máximo con una proporción de **0.25 para BM25 y 0.75 para la búsqueda vectorial**. A partir de esta configuración, aumentar el peso de la búsqueda vectorial no produjo una mejora adicional en Precision@5 sobre el Golden Set utilizado.
 
-* Peso búsqueda vectorial: `0.75`.
+### Configuración seleccionada
 
-## Comparación de configuraciones
+A partir de los resultados obtenidos, se seleccionó la siguiente configuración para el sistema:
 
-Se realizaron pruebas variando el tamaño de los chunks para analizar su impacto sobre Precision@5 y Recall@5.
+* **Chunk size:** `400` tokens.
+* **Chunk overlap:** `100` tokens.
+* **Top-k:** `5`.
+* **Peso BM25:** `0.25`.
+* **Peso búsqueda vectorial:** `0.75`.
 
-Con un overlap de 100 tokens se obtuvieron los siguientes resultados:
+Esta configuración permitió alcanzar un **Recall@5 del 100%** y la mayor **Precision@5 observada (80%)** entre las configuraciones de tamaño de chunk evaluadas.
 
-| Chunk size | Precision@5 | Recall@5 |
-| ---------- | ----------- | -------- |
-| 600        | 65%         | 87.5%    |
-| 500        | 72.5%       | 100%     |
-| 400        | 80%         | 100%     |
-| 300        | 72.5%       | 100%     |
+### Comparación de configuraciones
+
+Para analizar específicamente el impacto del tamaño de los chunks, se mantuvo un `overlap` de 100 tokens y se evaluaron cuatro tamaños diferentes:
+
+| **Chunk size** | **Precision@5** | **Recall@5** |
+| -------------: | --------------: | -----------: |
+|            600 |             65% |        87.5% |
+|            500 |           72.5% |         100% |
+|            400 |             80% |         100% |
+|            300 |           72.5% |         100% |
 
 A partir de estos resultados se seleccionó un tamaño de **400 tokens**, ya que obtuvo la mayor Precision@5 manteniendo un Recall@5 del 100% sobre el Golden Set utilizado.
 
 También se evaluaron diferentes pesos para el `EnsembleRetriever`. La configuración seleccionada fue `0.25` para BM25 y `0.75` para la búsqueda vectorial, correspondiente a la mejor combinación observada en las pruebas realizadas sobre este corpus.
 
 Estos resultados son específicos del corpus y del Golden Set utilizados y no representan necesariamente el comportamiento del recuperador sobre otros conjuntos de documentos.
+
+### Reproducción del análisis
+
+Para reproducir el análisis de las diferentes configuraciones del `EnsembleRetriever`, ejecutar:
+
+```bash
+python -m tests.test_analizar_weights
+```
+
+El análisis de los pesos del `EnsembleRetriever` se realiza sobre los documentos y chunks actualmente disponibles en Pinecone.
+
+Para evaluar un tamaño de chunk diferente, es necesario modificar el valor de `chunk_size` en `chunking.py` y volver a generar la base vectorial. Para ello, se debe eliminar el índice o namespace existente y ejecutar nuevamente el proceso de ingesta, de modo que los documentos sean procesados y almacenados utilizando la nueva configuración de chunking.
+
+Una vez generada nuevamente la base, se puede ejecutar el script de análisis para comparar los resultados de Precision@5 y Recall@5.
+
+pandas y matplotlib se utilizan para el análisis y visualización de los resultados experimentales incluidos en la carpeta analysis/.
 
 ## Ejecución
 
@@ -450,6 +472,13 @@ pythonpath = .
 ## Estructura del proyecto
 
 ```text
+├── analysis/                              # Análisis y visualización de resultados
+│   ├── analisis_resultados.ipynb          # Notebook para el análisis experimental
+│   ├── preentrega4_datos_recall.csv       # Datos de Recall@5
+│   ├── preentrega4_datos_precision.csv    # Datos de Precision@5
+│   ├── recall_at_5.png                    # Gráfico de Recall@5
+│   └── precision_at_5.png                 # Gráfico de Precision@5
+│
 ├── data/                                  # Documentos utilizados como fuente del RAG
 │   ├── Pagano 2006 CAP 6 - Estadística para las ciencias del comportamiento, correlacion.pdf
 │   ├── Pagano 2006 CAP 7 - Estadística para las ciencias del comportamiento, regresion.pdf
@@ -462,20 +491,21 @@ pythonpath = .
 │   └── Sampieri 2018 CAP 8 - Metodología de la investigación, seleccion de la muestra.pdf
 │
 ├── tests/                                 # Pruebas automatizadas
-│   ├── test_analizar_weights.py          # Tests de evaluación de pesos
-│   ├── test_chunking.py                  # Tests del procesamiento y chunking
-│   ├── test_errors.py                    # Tests de clasificación de errores
-│   ├── test_rag.py                       # Tests del sistema RAG
-│   ├── test_schemas.py                   # Tests de validación de los esquemas
-│   ├── test_setup.py                     # Tests de configuración de infraestructura
-│   └── test_similitud.py                 # Tests de similitud
+│   ├── test_analizar_weights.py           # Tests de evaluación de pesos
+│   ├── test_chunking.py                   # Tests del procesamiento y chunking
+│   ├── test_errors.py                     # Tests de clasificación de errores
+│   ├── test_rag.py                        # Tests del sistema RAG
+│   ├── test_schemas.py                    # Tests de validación de los esquemas
+│   ├── test_setup.py                      # Tests de configuración de infraestructura
+│   └── test_similitud.py                  # Tests de similitud
 │
 ├── .github/
 │   └── workflows/
-│       └── tests.yml                     # Workflow de GitHub Actions
+│       └── tests.yml                      # Workflow de GitHub Actions
 │
 ├── .env.example                           # Ejemplo de variables de entorno
 ├── .gitignore
+├── analizar_weights.py                    # Análisis experimental de pesos
 ├── chain.py                               # Modelo Gemini, parser y cadena LCEL
 ├── chunking.py                            # Limpieza y división de documentos
 ├── db_config.py                           # Configuración de embeddings y Pinecone
@@ -490,10 +520,10 @@ pythonpath = .
 ├── rag.py                                 # Orquestación del sistema RAG
 ├── retriever.py                           # Recuperador híbrido
 ├── schemas.py                             # Modelos Pydantic y tipos de error
-├── analizar_weights.py                    # Análisis experimental de pesos
 ├── README.md
 └── requirements.txt                       # Dependencias del proyecto
 ```
+
 
 ## Sobre el código
 
