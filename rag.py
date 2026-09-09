@@ -1,5 +1,16 @@
 
 
+# Formatear el documento para que lo lea el LLM
+# documentos_procesados es el procesamiento para generar los embedings
+def formatear_documentos(docs) -> str:
+    return "\n\n---\n\n".join(
+        f"[Fuente: {d.metadata.get('fuente', 'desconocida')}]\n"
+        f"[Página: {d.metadata.get('pagina', 'desconocida')}]\n"
+        f"[Categoría: {d.metadata.get('categoria', 'desconocida')}]\n"
+        f"[Chunk: {d.metadata.get('chunk_id', 'desconocida')}]\n"
+        f"{d.page_content}"
+        for d in docs
+    )
 
 
 
