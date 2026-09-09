@@ -24,6 +24,8 @@ async def get_rag_response(query: str) -> RAGResponse:
 
         docs = await retriever_hibrido.ainvoke(query)
 
+        logger.info(f"Fragmentos recuperados: {len(docs)}")
+
         contexto = formatear_documentos(docs)
 
         salida_llm: RespuestaLLM = await chain.ainvoke(
@@ -41,7 +43,8 @@ async def get_rag_response(query: str) -> RAGResponse:
         categorias = sorted({d.metadata.get("categoria", "desconocida") for d in docs})
         chunks_ids = sorted({int(d.metadata.get("chunk_id", "desconocida")) for d in docs})
         
-
+        
+        logger.info(f"Consulta procesada correctamente: {query}")
         return RAGResponse(
             query=query,
             respuesta=salida_llm.respuesta,
@@ -50,7 +53,8 @@ async def get_rag_response(query: str) -> RAGResponse:
             categorias=categorias,
             chunks_ids=chunks_ids,
             fragmentos_recuperados=len(docs),
-        )
+            )
+    
     except Exception as e:
         logger.error(f"Error durante la ejecución: {e}")
         # Excepciones centralizadas para convertirlas en errores legibles para la aplicación.
