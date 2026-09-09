@@ -1,5 +1,3 @@
-import pytest
-
 from google.genai.errors import ClientError
 
 from errors import classify_error

@@ -1,4 +1,5 @@
 import os
+
 from langchain_huggingface import HuggingFaceEmbeddings
 
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")

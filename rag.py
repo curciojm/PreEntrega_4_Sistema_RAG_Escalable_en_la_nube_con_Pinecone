@@ -1,12 +1,12 @@
-from logging_config import logger
-from schemas import RespuestaLLM, RAGSystem, RAGResponse
 from chain import chain, parser_llm
-from retriever import retriever_hibrido
 from errors import classify_error
+from logging_config import logger
+from retriever import retriever_hibrido
+from schemas import RAGResponse, RespuestaLLM
 
-# Formatear el documento para que lo lea el LLM
-# documentos_procesados es el procesamiento para generar los embedings
+
 def formatear_documentos(docs) -> str:
+    """Formatea los documentos recuperados para incorporarlos al contexto del LLM."""
     return "\n\n---\n\n".join(
         f"[Fuente: {d.metadata.get('fuente', 'desconocida')}]\n"
         f"[Página: {d.metadata.get('pagina', 'desconocida')}]\n"
@@ -36,8 +36,6 @@ async def get_rag_response(query: str) -> RAGResponse:
             }
         )
 
-        # sorted devuelve lista
-        # por alguna razon que desconozco paginas y chunks aveces salian con float asi que force la transformacion en la respuesta
         fuentes = sorted({d.metadata.get("fuente", "desconocida") for d in docs})
         paginas = sorted({int(d.metadata.get("pagina", "desconocida")) for d in docs})
         categorias = sorted({d.metadata.get("categoria", "desconocida") for d in docs})
@@ -57,5 +55,5 @@ async def get_rag_response(query: str) -> RAGResponse:
     
     except Exception as e:
         logger.error(f"Error durante la ejecución: {e}")
-        # Excepciones centralizadas para convertirlas en errores legibles para la aplicación.
+        # Se centraliza la clasificación de excepciones para devolver errores legibles a la aplicación.
         raise classify_error(e)

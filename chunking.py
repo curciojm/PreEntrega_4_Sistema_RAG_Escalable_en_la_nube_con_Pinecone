@@ -1,7 +1,7 @@
 import os
 import re
-import tiktoken
 
+import tiktoken
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -13,6 +13,8 @@ class DocumentProcessor:
     def __init__(self, model_encoding: str = "cl100k_base"):
         self.tokenizer = tiktoken.get_encoding(model_encoding)
 
+        # Los mejores resultados de Precision@5 y Recall@5 se obtuvieron con estos valores,
+        # aunque la consigna recomendaba probar chunks de entre 500 y 800 tokens.
         self.splitter = RecursiveCharacterTextSplitter(
             chunk_size=400,
             chunk_overlap=100,
@@ -30,7 +32,6 @@ class DocumentProcessor:
         return text.strip()
 
     def calculate_tokens(self, text: str) -> int:
-        """Calcula la cantidad de tokens usando tiktoken."""
         return len(self.tokenizer.encode(text))
 
     def process_document(
@@ -43,10 +44,8 @@ class DocumentProcessor:
 
         for document in documents:
 
-            # 1. Limpiar el contenido de la página
             cleaned_text = self.clean_text(document.page_content)
 
-            # 2. Crear chunks conservando la metadata original
             chunks = self.splitter.create_documents(
                 [cleaned_text],
                 metadatas=[document.metadata]
@@ -54,7 +53,6 @@ class DocumentProcessor:
 
             processed_chunks.extend(chunks)
 
-        # 3. Agregar metadata avanzada
         for i, chunk in enumerate(processed_chunks):
 
             nombre_archivo = os.path.basename(
@@ -65,7 +63,7 @@ class DocumentProcessor:
                 nombre_archivo
             )[0]
 
-            # las categorias se forman a partir de la segunda mitad del titulo del texto
+            # La fuente y la categoría se obtienen del nombre del archivo, separadas por una coma.
             fuente, categoria = nombre_sin_extension.split(
                 ",",
                 maxsplit=1
@@ -77,7 +75,7 @@ class DocumentProcessor:
             
             chunk.metadata["categoria"] = categoria.strip()
 
-            # por alguna razon pincecone asigna aveces float
+            # Se fuerza a entero porque Pinecone puede devolver este valor como float.
             chunk.metadata["chunk_id"] = int(i)
 
             token_count = self.calculate_tokens(

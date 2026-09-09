@@ -76,13 +76,3 @@ def test_process_document_agrega_metadata():
     assert metadata["categoria"] == "correlacion"
     assert metadata["pagina"] == 1
     assert metadata["chunk_id"] == 0
-
-
-# ¿Qué estamos comprobando?
-
-# Los cuatro tests cubren las partes importantes de DocumentProcessor:
-
-# clean_text → que la limpieza de espacios y saltos de línea funcione.
-# calculate_tokens → que el conteo mediante tiktoken produzca un número válido.
-# process_document_crea_chunks → que efectivamente transforme los documentos en chunks.
-# process_document_agrega_metadata → que agregue correctamente fuente, pagina, categoria y chunk_id.

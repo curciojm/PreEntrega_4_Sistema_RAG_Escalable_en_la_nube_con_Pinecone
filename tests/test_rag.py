@@ -1,9 +1,8 @@
 import pytest
-
 from langchain_core.documents import Document
 
-from schemas import RespuestaLLM, RAGResponse
 from rag import formatear_documentos
+from schemas import RAGResponse, RespuestaLLM
 
 
 def test_formatear_documentos():

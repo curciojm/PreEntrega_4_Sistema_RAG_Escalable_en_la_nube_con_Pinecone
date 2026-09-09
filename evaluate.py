@@ -1,13 +1,13 @@
 import json
-from typing import List, Dict
 
-from schemas import RAGSystem
 from retriever import retriever_hibrido
+from schemas import RAGSystem
 
 with open("golden_set.json", "r", encoding="utf-8") as f:
     golden_set = json.load(f)
 
-def evaluar(rag_system: RAGSystem, golden_set: List[Dict]) -> Dict:
+# Calcula recall y precisión de las fuentes y categorías recuperadas.
+def evaluar(rag_system: RAGSystem, golden_set: list[dict]) -> dict:
 
     resultados_por_pregunta = []
 
@@ -25,24 +25,16 @@ def evaluar(rag_system: RAGSystem, golden_set: List[Dict]) -> Dict:
 
         if respuesta_disponible:
 
-            # RECALL
-            # Recall de fuentes:
-            # ¿Aparece al menos una de las fuentes esperadas?
             recall_fuentes = 1.0 if any(
                 fuente in fuentes_esperadas
                 for fuente in fuentes_recuperadas
             ) else 0.0
 
-            # Recall de categorías:
-            # ¿Aparece al menos una de las categorías esperadas?
             recall_categorias = 1.0 if any(
                 categoria in categorias_esperadas
                 for categoria in categorias_recuperadas
             ) else 0.0
 
-            # Precision@5:
-            # Un fragmento es relevante si su fuente O su categoría
-            # coincide con alguna de las esperadas.
             coincidencias_fuentes = sum(
                 1
                 for fuente in fuentes_recuperadas
@@ -67,14 +59,7 @@ def evaluar(rag_system: RAGSystem, golden_set: List[Dict]) -> Dict:
             )
 
         else:
-
-            # Cuando la respuesta no está disponible en el corpus,
-            # el retriever puede recuperar fragmentos igualmente.
-            # Por lo tanto, no evaluamos esos fragmentos como
-            # relevantes/irrelevantes.
-            #
-            # El caso se considera correcto porque no esperamos
-            # fuentes ni categorías específicas.
+            # Se excluyen del cálculo las preguntas sin respuesta disponible para evitar inflar las métricas.
             recall_fuentes = None
             recall_categorias = None
             precision_fuentes = None

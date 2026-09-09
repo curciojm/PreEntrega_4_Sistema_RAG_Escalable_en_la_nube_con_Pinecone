@@ -1,8 +1,8 @@
 import json
 
 from langchain_classic.retrievers import EnsembleRetriever
-from PreEntrega_4_Sistema_RAG_Escalable_en_la_nube_con_Pinecone.retriever import retriever_bm25, retriever_vectorial
 
+from retriever import retriever_bm25, retriever_vectorial
 
 WEIGHTS = [
     (1.00, 0.00),
@@ -35,6 +35,7 @@ def crear_retriever(bm25_weight, vector_weight):
 
 
 def evaluar_retriever(retriever, golden_set):
+    """Calcula Precision@5 y Recall@5 sobre el golden set."""
     precision_resultados = []
     recall_resultados = []
 

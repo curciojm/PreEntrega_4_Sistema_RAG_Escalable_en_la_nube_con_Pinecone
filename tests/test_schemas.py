@@ -1,6 +1,6 @@
 from langchain_core.documents import Document
 
-from schemas import RespuestaLLM, RAGSystem, RAGResponse
+from schemas import RAGResponse, RAGSystem, RespuestaLLM
 
 
 def test_respuesta_llm():

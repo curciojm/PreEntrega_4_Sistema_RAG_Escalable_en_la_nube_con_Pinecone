@@ -1,11 +1,10 @@
 from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader
 from langchain_core.documents import Document
-from chunking import DocumentProcessor
 
+from chunking import DocumentProcessor
 from db_config import NAMESPACE
 
 
-# Cargar pdfs
 def procesamiento_desde_pdfs():
     print("📄 Pinecone vacío. Procesando PDFs...")
 
@@ -21,7 +20,6 @@ def procesamiento_desde_pdfs():
 
     return processor.process_document(documentos_crudos)
 
-# Si ya estan cargados
 def recuperar_documentos_de_pinecone(index):
     print("📦 Recuperando documentos desde Pinecone...")
 

@@ -1,9 +1,8 @@
-from typing import List, Dict
 from enum import Enum
+
 from pydantic import BaseModel, Field
 
 
-# Respuesta del modelo
 class RespuestaLLM(BaseModel):
     """Lo que el LLM debe generar, parseado directamente de su output."""
 
@@ -15,8 +14,6 @@ class RespuestaLLM(BaseModel):
     )
 
 
-# RAG
-# Sistema de BÚSQUEDA
 class RAGSystem:
     """Encapsula el EnsembleRetriever y expone un método simple para obtener el top-k."""
 
@@ -24,7 +21,7 @@ class RAGSystem:
         self.retriever = retriever
         self.k = k
 
-    def obtener_top_k(self, query: str) -> List[Dict]:
+    def obtener_top_k(self, query: str) -> list[dict]:
         docs = self.retriever.invoke(query)[:self.k]
 
         return [
@@ -39,16 +36,15 @@ class RAGSystem:
         ]
 
 
-# Sistema de RESPUESTA
 class RAGResponse:
     def __init__(
         self,
         query: str,
         respuesta: str,
-        fuentes: List[str],
-        paginas: List[int],
-        categorias: List[str],
-        chunks_ids: List[int],
+        fuentes: list[dict],
+        paginas: list[dict],
+        categorias: list[dict],
+        chunks_ids: list[dict],
         fragmentos_recuperados: int,
     ):  
         self.query = query
@@ -59,8 +55,6 @@ class RAGResponse:
         self.chunks_ids = chunks_ids
         self.fragmentos_recuperados = fragmentos_recuperados
 
-
-# Errores posibles
 class LLMErrorType(str, Enum):
     """Tipos de errores utilizados para clasificar las excepciones."""
 
