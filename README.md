@@ -97,6 +97,7 @@ El modelo LLM se configura con un rol de **docente universitario especializado e
 * Ruff
 
 **Nota**: Se utilizó Python 3.11.9 para asegurar la compatibilidad con las dependencias del proyecto, siguiendo la corrección indicada en la Pre-Entrega anterior.
+
 ## Variables de entorno
 
 El proyecto utiliza las siguientes variables de entorno:
@@ -114,6 +115,14 @@ La API keys reales no se incluyen en el repositorio.
 El archivo `.env` se encuentra excluido mediante `.gitignore`.
 
 Para la ejecución de los tests mediante GitHub Actions, las API keys se almacenan como **Repository Secrets** y son inyectadas como variables de entorno durante la ejecución del workflow.
+
+### Instalar dependencias
+
+Una vez creado y activado el entorno virtual, instalar las dependencias del proyecto:
+
+```bash
+python -m pip install -r requirements.txt
+```
 
 ## Infraestructura de Pinecone
 
