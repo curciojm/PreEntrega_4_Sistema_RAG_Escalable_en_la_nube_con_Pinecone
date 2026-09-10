@@ -235,23 +235,22 @@ El objetivo fue determinar qué combinación permitía obtener el mejor desempe�
 
 La Figura 1 muestra el Recall@5 obtenido para diferentes combinaciones de pesos entre BM25 y búsqueda vectorial, utilizando distintos tamaños de chunk.
 
+**Figura 1.** *Recall@5 según la proporción de pesos entre BM25 y búsqueda vectorial para diferentes tamaños de chunk*.
 ![Recall@5](analysis/recall_at_5.png)
-
-**Figura 1.** Recall@5 según la proporción de pesos entre BM25 y búsqueda vectorial para diferentes tamaños de chunk.
 
 Los valores más altos de Recall@5 se obtuvieron con chunks de **500, 400 y 300 tokens**, alcanzando el 100% para varias de las configuraciones evaluadas. En cambio, los chunks de 600 tokens presentaron un Recall menor en las configuraciones con mayor peso vectorial.
 
 En este conjunto de pruebas, los resultados sugieren que el tamaño de los chunks tuvo un efecto relevante sobre la capacidad del sistema para recuperar información pertinente. Sin embargo, el comportamiento también dependió de la combinación de pesos utilizada en el `EnsembleRetriever`.
 
-**Nota:** Algunas configuraciones presentan valores idénticos de Recall@5, por lo que sus líneas se superponen en el gráfico. Esto refleja que, sobre el Golden Set utilizado, dichas configuraciones tuvieron el mismo desempeño en Recall@5.
+**Nota:** Algunas configuraciones presentan valores idénticos de Recall@5, por lo que sus líneas se superponen en el gráfico (línea roja). Esto refleja que, sobre el Golden Set utilizado, dichas configuraciones tuvieron el mismo desempeño en Recall@5.
 
 #### Precision@5
 
 La Figura 2 presenta los resultados de Precision@5 para las mismas combinaciones de pesos y tamaños de chunk.
 
-![Precision@5](analysis/precision_at_5.png)
+**Figura 2.** *Precision@5 según la proporción de pesos entre BM25 y búsqueda vectorial para diferentes tamaños de chunk*.
 
-**Figura 2.** Precision@5 según la proporción de pesos entre BM25 y búsqueda vectorial para diferentes tamaños de chunk.
+![Precision@5](analysis/precision_at_5.png)
 
 Los mejores valores de Precision@5 se obtuvieron con un tamaño de **400 tokens**. En este caso, la precisión alcanzó su máximo con una proporción de **0.25 para BM25 y 0.75 para la búsqueda vectorial**. A partir de esta configuración, aumentar el peso de la búsqueda vectorial no produjo una mejora adicional en Precision@5 sobre el Golden Set utilizado.
 
@@ -298,7 +297,7 @@ Para evaluar un tamaño de chunk diferente, es necesario modificar el valor de `
 
 Una vez generada nuevamente la base, se puede ejecutar el script de análisis para comparar los resultados de Precision@5 y Recall@5.
 
-pandas y matplotlib se utilizan para el análisis y visualización de los resultados experimentales incluidos en la carpeta analysis/.
+Ademas pandas y matplotlib se utilizan para el análisis y visualización de los resultados experimentales incluidos en la carpeta analysis/.
 
 ## Ejecución
 
@@ -440,7 +439,14 @@ Instalación de dependencias
 Ejecución de pytest
 ```
 
-Las credenciales necesarias para ejecutar los componentes que utilizan servicios externos se almacenan como **Repository Secrets** de GitHub.
+El proyecto utiliza además un archivo pytest.ini para configurar el pythonpath y permitir que los tests importen correctamente los módulos ubicados en el directorio raíz del proyecto, tanto en el entorno local como en GitHub Actions.
+
+```ini
+[pytest]
+pythonpath = .
+```
+
+Las credenciales necesarias para ejecutar los componentes que utilizan servicios externos se almacenan como Repository Secrets de GitHub.
 
 La suite de tests se ejecuta correctamente tanto en el entorno local como en GitHub Actions.
 
@@ -461,13 +467,6 @@ ruff check .
 ```
 
 El formateo automático se utiliza para mantener una estructura consistente, mientras que las sugerencias de `ruff check` se revisan manualmente.
-
-Además, se utiliza un archivo `pytest.ini` para configurar el path de los módulos del proyecto durante la ejecución de las pruebas:
-
-```ini
-[pytest]
-pythonpath = .
-```
 
 ## Estructura del proyecto
 
