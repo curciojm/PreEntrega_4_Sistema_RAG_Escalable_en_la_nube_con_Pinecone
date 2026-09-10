@@ -251,7 +251,8 @@ Los valores más altos de Recall@5 se obtuvieron con chunks de **500, 400 y 300 
 
 En este conjunto de pruebas, los resultados sugieren que el tamaño de los chunks tuvo un efecto relevante sobre la capacidad del sistema para recuperar información pertinente. Sin embargo, el comportamiento también dependió de la combinación de pesos utilizada en el `EnsembleRetriever`.
 
-**Nota:** Algunas configuraciones presentan valores idénticos de Recall@5, por lo que sus líneas se superponen en el gráfico (línea roja). Esto refleja que, sobre el Golden Set utilizado, dichas configuraciones tuvieron el mismo desempeño en Recall@5.
+**Nota:** Algunas configuraciones presentan valores idénticos de Recall@5, por lo que sus líneas se superponen en el gráfico. En particular, las líneas **verde y naranja** quedan ocultas debajo de la **línea roja**, ya que presentan exactamente los mismos valores de Recall@5 en todas las configuraciones de pesos. Esto refleja que, sobre el Golden Set utilizado, dichas configuraciones tuvieron el mismo desempeño.
+
 
 #### Precision@5
 
