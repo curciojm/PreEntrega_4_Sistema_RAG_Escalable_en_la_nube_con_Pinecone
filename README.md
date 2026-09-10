@@ -504,7 +504,6 @@ El formateo automático se utiliza para mantener una estructura consistente, mie
 │
 ├── .env.example                           # Ejemplo de variables de entorno
 ├── .gitignore
-├── analizar_weights.py                    # Análisis experimental de pesos
 ├── chain.py                               # Modelo Gemini, parser y cadena LCEL
 ├── chunking.py                            # Limpieza y división de documentos
 ├── db_config.py                           # Configuración de embeddings y Pinecone
