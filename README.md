@@ -205,7 +205,7 @@ Esta combinación permite aprovechar tanto la similitud semántica como la coinc
 
 ## Evaluación
 
-Se incorporó un Golden Set de consultas relacionadas con el corpus utilizado por el sistema.
+Se incorporó un Golden Set de consultas relacionadas con el corpus utilizado por el sistema. El Golden Set está compuesto por 10 preguntas, cada una asociada a un documento fuente esperado. De estas, 8 preguntas cuentan con una fuente presente en el corpus y se utilizan para el cálculo de las métricas. Las 2 preguntas restantes corresponden a casos en los que la fuente esperada no se encuentra disponible en el corpus, por lo que se excluyen del cálculo de Precision@5 y Recall@5.
 
 Cada consulta tiene asociado un documento fuente esperado, lo que permite evaluar si el recuperador logra encontrar el documento relevante dentro de los primeros 5 resultados.
 
